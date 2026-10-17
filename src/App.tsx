@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+import UpdateBanner from "./components/UpdateBanner";
 
 function App() {
   const [content, setContent] = useState("");
@@ -39,7 +40,9 @@ function App() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-8 text-white sm:px-6 sm:py-12">
+    <>
+      <UpdateBanner />
+      <main className="min-h-screen bg-slate-950 px-4 py-8 text-white sm:px-6 sm:py-12">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <header className="mb-8 text-center sm:mb-10">
@@ -241,7 +244,8 @@ function App() {
           Built with React, TypeScript, Tailwind CSS & Vite
         </footer>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
 
