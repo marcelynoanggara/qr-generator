@@ -130,15 +130,17 @@ function App() {
                       role="radio"
                       aria-checked={qrSize === s.value}
                       onClick={() => setQrSize(s.value)}
-                      className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                      className={`rounded-xl px-2 py-2.5 transition ${
                         qrSize === s.value
                           ? "bg-[#8fe388] text-[#07181f]"
                           : "text-white/55 hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      {s.label}
+                      <span className="block text-sm font-semibold leading-5">
+                        {s.label}
+                      </span>
                       <span
-                        className={`ml-1.5 text-xs font-normal ${
+                        className={`block text-[11px] font-normal leading-4 ${
                           qrSize === s.value
                             ? "text-[#07181f]/60"
                             : "text-white/30"
