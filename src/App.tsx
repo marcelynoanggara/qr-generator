@@ -7,74 +7,21 @@ function App() {
   const [qrColor, setQrColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [qrSize, setQrSize] = useState(256);
-  const [logo, setLogo] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !content.trim()) return;
-    let cancelled = false;
+    if (!canvasRef.current || !content.trim()) return;
 
-    QRCode.toCanvas(canvas, content, {
+    QRCode.toCanvas(canvasRef.current, content, {
       width: qrSize,
       margin: 2,
-      errorCorrectionLevel: "H",
       color: {
         dark: qrColor,
         light: backgroundColor,
       },
     });
-
-    if (!logo) return;
-    const img = new Image();
-    img.onload = () => {
-      if (cancelled) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      // Logo overlay ~22% of the QR, on a light backdrop so it stays scannable.
-      const s = qrSize * 0.22;
-      const x = (qrSize - s) / 2;
-      const y = (qrSize - s) / 2;
-      const pad = s * 0.18;
-      ctx.fillStyle = backgroundColor;
-      ctx.beginPath();
-      ctx.roundRect(x - pad, y - pad, s + pad * 2, s + pad * 2, pad);
-      ctx.fill();
-      // Cover-fit the image inside a rounded clip.
-      const ir = img.width / img.height;
-      let dw = s;
-      let dh = s;
-      let dx = x;
-      let dy = y;
-      if (ir > 1) {
-        dh = s / ir;
-        dy = y + (s - dh) / 2;
-      } else {
-        dw = s * ir;
-        dx = x + (s - dw) / 2;
-      }
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(x, y, s, s, s * 0.12);
-      ctx.clip();
-      ctx.drawImage(img, dx, dy, dw, dh);
-      ctx.restore();
-    };
-    img.src = logo;
-
-    return () => {
-      cancelled = true;
-    };
-  }, [content, qrColor, backgroundColor, qrSize, logo]);
-
-  const handleLogoFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setLogo(reader.result as string);
-    reader.readAsDataURL(file);
-  };
+  }, [content, qrColor, backgroundColor, qrSize]);
 
   const handleDownload = () => {
     if (!canvasRef.current || !content.trim()) return;
@@ -90,7 +37,6 @@ function App() {
     setQrColor("#000000");
     setBackgroundColor("#ffffff");
     setQrSize(256);
-    setLogo(null);
   };
 
   return (
@@ -219,44 +165,6 @@ function App() {
                   </span>
                 </div>
               </div>
-            </div>
-
-            {/* Logo */}
-            <div className="mt-6">
-              <span className="mb-2 block text-sm font-medium text-slate-300">
-                Logo image{" "}
-                <span className="font-normal text-slate-500">(optional)</span>
-              </span>
-
-              {logo ? (
-                <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 p-3">
-                  <img
-                    src={logo}
-                    alt="QR logo"
-                    className="h-10 w-10 rounded-lg object-cover"
-                  />
-                  <span className="flex-1 text-xs text-slate-400">
-                    Placed in the center of the QR code
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setLogo(null)}
-                    className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700 bg-slate-950 px-4 py-4 text-sm text-slate-400 transition hover:border-cyan-400/60 hover:text-white">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleLogoFile}
-                  />
-                  Upload an image
-                </label>
-              )}
             </div>
 
             {/* Reset */}
